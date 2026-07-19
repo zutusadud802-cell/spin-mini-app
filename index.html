@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>দৈনিক স্পিন — Daily Spin</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<!--
+  ============================================================
+  MONETAG SCRIPT PLACEHOLDER #1  (Site verification / SDK tag)
+  Monetag ড্যাশবোর্ড থেকে যে <script> ট্যাগ দেবে, সেটা এখানে বসান।
+  Example (আপনার নিজের zone id দিয়ে বদলে নিন):
+  <script src='//libtl.com/sdk.js' data-zone='XXXXXXX' data-sdk='show_XXXXXXX'></script>
+  ============================================================
+-->
+
+<style>
+  :root{
+    --bg-deep:#12102B;
+    --bg-panel:#1B1840;
+    --gold:#E8B444;
+    --teal:#2BD9C9;
+    --pink:#FF6F91;
+    --ink:#F4F1FA;
+    --ink-dim:#9A96C4;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 50% -10%, #2A2564 0%, transparent 55%),
+      var(--bg-deep);
+    font-family:'Hind Siliguri','Poppins',sans-serif;
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:18px 16px 100px;
+    overflow-x:hidden;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap');
+
+  .eyebrow{
+    font-family:'Poppins',sans-serif;
+    font-size:11px;
+    letter-spacing:3px;
+    color:var(--teal);
+    text-transform:uppercase;
+    margin-top:6px;
+  }
+  h1{
+    font-family:'Hind Siliguri',sans-serif;
+    font-weight:700;
+    font-size:24px;
+    margin:4px 0 2px;
+    text-align:center;
+  }
+  .balance-row{
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+    margin:6px 0 22px;
+  }
+  .balance-num{
+    font-family:'Poppins',sans-serif;
+    font-weight:800;
+    font-size:34px;
+    color:var(--gold);
+  }
+  .balance-label{ color:var(--ink-dim); font-size:13px; }
+
+  .wheel-wrap{
+    position:relative;
+    width:280px;
+    height:280px;
+    margin:10px auto 18px;
+  }
+  .pointer{
+    position:absolute;
+    top:-14px;
+    left:50%;
+    transform:translateX(-50%);
+    width:0;height:0;
+    border-left:12px solid transparent;
+    border-right:12px solid transparent;
+    border-top:20px solid var(--pink);
+    z-index:5;
+    filter:drop-shadow(0 0 6px rgba(255,111,145,.7));
+  }
+  #wheel{
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    display:block;
+    box-shadow:0 0 0 6px var(--bg-panel), 0 0 40px rgba(232,180,68,.25);
+    transition:transform 4.5s cubic-bezier(.13,.87,.03,1);
+  }
+  .hub{
+    position:absolute;
+    top:50%;left:50%;
+    width:56px;height:56px;
+    transform:translate(-50%,-50%);
+    background:var(--bg-panel);
+    border:3px solid var(--gold);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+    z-index:4;
+  }
+
+  .spin-btn{
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    letter-spacing:.5px;
+    color:#1B1840;
+    background:linear-gradient(135deg,var(--gold),#F6D186);
+    border:none;
+    border-radius:16px;
+    padding:15px 46px;
+    cursor:pointer;
+    box-shadow:0 8px 20px rgba(232,180,68,.35);
+    transition:transform .15s ease, opacity .2s ease;
+  }
+  .spin-btn:active{ transform:scale(.96); }
+  .spin-btn:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+    box-shadow:none;
+  }
+
+  .timer{
+    margin-top:12px;
+    font-size:13px;
+    color:var(--ink-dim);
+    text-align:center;
+    min-height:18px;
+  }
+
+  .ad-btn{
+    margin-top:16px;
+    font-family:'Hind Siliguri',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    color:var(--teal);
+    background:rgba(43,217,201,.1);
+    border:1px solid rgba(43,217,201,.4);
+    border-radius:12px;
+    padding:10px 20px;
+    cursor:pointer;
+  }
+
+  .banner-slot{
+    width:100%;
+    max-width:340px;
+    min-height:60px;
+    margin-top:26px;
+    border:1px dashed rgba(154,150,196,.4);
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink-dim);
+    font-size:12px;
+    text-align:center;
+    padding:8px;
+  }
+
+  .history{
+    width:100%;
+    max-width:340px;
+    margin-top:22px;
+  }
+  .history h3{
+    font-size:13px;
+    color:var(--ink-dim);
+    font-weight:600;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin:0 0 8px;
+  }
+  .history-item{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    padding:8px 12px;
+    background:var(--bg-panel);
+    border-radius:10px;
+    margin-bottom:6px;
+  }
+  .history-item span:last-child{ color:var(--gold); font-weight:600; }
+
+  .toast{
+    position:fixed;
+    bottom:28px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--bg-panel);
+    border:1px solid var(--gold);
+    color:var(--ink);
+    padding:12px 22px;
+    border-radius:14px;
+    font-size:14px;
+    font-weight:600;
+    opacity:0;
+    transition:opacity .3s ease, transform .3s ease;
+    pointer-events:none;
+    z-index:50;
+    text-align:center;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+
+  <div class="eyebrow">DAILY SPIN &amp; EARN</div>
+  <h1>প্রতিদিন ঘোরান, পয়েন্ট জিতুন</h1>
+  <div class="balance-row">
+    <span class="balance-num" id="balanceNum">0</span>
+    <span class="balance-label">পয়েন্ট</span>
+  </div>
+
+  <div class="wheel-wrap">
+    <div class="pointer"></div>
+    <svg id="wheel" viewBox="0 0 200 200"></svg>
+    <div class="hub">🎯</div>
+  </div>
+
+  <button class="spin-btn" id="spinBtn">ঘোরান</button>
+  <div class="timer" id="timerText"></div>
+
+  <button class="ad-btn" id="adBtn">📺 বিজ্ঞাপন দেখে এক্সট্রা স্পিন নিন</button>
+
+  <!--
+    ============================================================
+    MONETAG BANNER PLACEHOLDER
+    Monetag "In-App Banner" কোড এখানে বসাতে পারেন (optional)।
+    ============================================================
+  -->
+  <div class="banner-slot" id="bannerSlot">বিজ্ঞাপন এখানে দেখাবে (Banner Ad Slot)</div>
+
+  <div class="history">
+    <h3>সাম্প্রতিক ইতিহাস</h3>
+    <div id="historyList"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  // ---------- Telegram init ----------
+  const tg = window.Telegram ? window.Telegram.WebApp : null;
+  if (tg) { tg.ready(); tg.expand(); }
+  const userId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user)
+                  ? String(tg.initDataUnsafe.user.id)
+                  : 'guest';
+
+  // ---------- Storage keys (per user) ----------
+  const K_BAL = 'spin_balance_' + userId;
+  const K_LAST = 'spin_last_' + userId;
+  const K_HIST = 'spin_history_' + userId;
+  const SPIN_COOLDOWN_MS = 24 * 60 * 60 * 1000; // ২৪ ঘণ্টা
+
+  // ---------- Wheel segments ----------
+  const segments = [
+    { label:'10',  value:10,  color:'#E8B444' },
+    { label:'5',   value:5,   color:'#2BD9C9' },
+    { label:'50',  value:50,  color:'#FF6F91' },
+    { label:'0',   value:0,   color:'#3A356F' },
+    { label:'100', value:100, color:'#E8B444' },
+    { label:'15',  value:15,  color:'#2BD9C9' },
+    { label:'20',  value:20,  color:'#FF6F91' },
+    { label:'30',  value:30,  color:'#3A356F' },
+  ];
+
+  function buildWheel(){
+    const svg = document.getElementById('wheel');
+    const n = segments.length;
+    const cx=100, cy=100, r=98;
+    let html = '';
+    for(let i=0;i<n;i++){
+      const start = (360/n)*i;
+      const end = start + 360/n;
+      const p1 = polar(cx,cy,r,start);
+      const p2 = polar(cx,cy,r,end);
+      const large = (end-start) > 180 ? 1 : 0;
+      html += `<path d="M${cx},${cy} L${p1.x},${p1.y} A${r},${r} 0 ${large} 1 ${p2.x},${p2.y} Z" fill="${segments[i].color}" stroke="#12102B" stroke-width="1.5"/>`;
+      const mid = start + (360/n)/2;
+      const tp = polar(cx,cy,r*0.68,mid);
+      html += `<text x="${tp.x}" y="${tp.y}" fill="#12102B" font-size="13" font-weight="700" text-anchor="middle" dominant-baseline="middle" transform="rotate(${mid+90},${tp.x},${tp.y})">${segments[i].label}</text>`;
+    }
+    svg.innerHTML = html;
+  }
+  function polar(cx,cy,r,deg){
+    const rad = (deg-90) * Math.PI/180;
+    return { x: cx + r*Math.cos(rad), y: cy + r*Math.sin(rad) };
+  }
+
+  // ---------- State helpers ----------
+  function getBalance(){ return parseInt(localStorage.getItem(K_BAL) || '0', 10); }
+  function setBalance(v){ localStorage.setItem(K_BAL, String(v)); document.getElementById('balanceNum').textContent = v; }
+  function getHistory(){ try{ return JSON.parse(localStorage.getItem(K_HIST) || '[]'); }catch(e){ return []; } }
+  function pushHistory(entry){
+    const h = getHistory();
+    h.unshift(entry);
+    localStorage.setItem(K_HIST, JSON.stringify(h.slice(0,8)));
+    renderHistory();
+  }
+  function renderHistory(){
+    const list = document.getElementById('historyList');
+    const h = getHistory();
+    if(h.length===0){ list.innerHTML = '<div class="history-item"><span>এখনো কোনো স্পিন হয়নি</span><span></span></div>'; return; }
+    list.innerHTML = h.map(item => `<div class="history-item"><span>${item.date}</span><span>+${item.value}</span></div>`).join('');
+  }
+
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 2200);
+  }
+
+  // ---------- Spin logic ----------
+  let currentRotation = 0;
+  let spinning = false;
+
+  function timeLeftText(){
+    const last = parseInt(localStorage.getItem(K_LAST) || '0', 10);
+    const remain = SPIN_COOLDOWN_MS - (Date.now() - last);
+    if(remain <= 0) return null;
+    const h = Math.floor(remain/3600000);
+    const m = Math.floor((remain%3600000)/60000);
+    return `পরের ফ্রি স্পিন: ${h} ঘণ্টা ${m} মিনিট পর`;
+  }
+
+  function refreshSpinAvailability(){
+    const btn = document.getElementById('spinBtn');
+    const timerEl = document.getElementById('timerText');
+    const msg = timeLeftText();
+    if(msg){
+      btn.disabled = true;
+      timerEl.textContent = msg;
+    } else {
+      btn.disabled = false;
+      timerEl.textContent = 'আজকের ফ্রি স্পিন রেডি আছে ✅';
+    }
+  }
+
+  function doSpin(bonus){
+    if(spinning) return;
+    if(!bonus){
+      const msg = timeLeftText();
+      if(msg){ showToast('আজকের ফ্রি স্পিন শেষ! বিজ্ঞাপন দেখে এক্সট্রা স্পিন নিন।'); return; }
+    }
+    spinning = true;
+    document.getElementById('spinBtn').disabled = true;
+
+    const n = segments.length;
+    const winIndex = Math.floor(Math.random()*n);
+    const segAngle = 360/n;
+    const targetCenter = winIndex*segAngle + segAngle/2;
+    // rotate so pointer (top) lands on the chosen segment, plus extra spins
+    const extraSpins = 5*360;
+    const finalRotation = currentRotation + extraSpins + (360 - targetCenter);
+    currentRotation = finalRotation;
+
+    const wheelEl = document.getElementById('wheel');
+    wheelEl.style.transform = `rotate(${finalRotation}deg)`;
+
+    setTimeout(()=>{
+      const won = segments[winIndex].value;
+      setBalance(getBalance() + won);
+      pushHistory({ date: new Date().toLocaleTimeString('bn-BD',{hour:'2-digit',minute:'2-digit'}), value: won });
+      showToast(won > 0 ? `🎉 আপনি ${won} পয়েন্ট জিতেছেন!` : 'এবার কিছুই আসেনি, পরের বার চেষ্টা করুন!');
+      if(!bonus){
+        localStorage.setItem(K_LAST, String(Date.now()));
+      }
+      spinning = false;
+      refreshSpinAvailability();
+    }, 4600);
+  }
+
+  // ---------- Monetag rewarded ad hook ----------
+  // Monetag থেকে পাওয়া "Rewarded Interstitial" ফাংশনটি এখানে কল করুন।
+  // সাধারণত Monetag SDK একটি ফাংশন দেয়, যেমন: show_XXXXXXX()
+  // সেটি একটি Promise রিটার্ন করে যা অ্যাড শেষ হলে resolve হয়।
+  function showRewardedAd(){
+    return new Promise((resolve) => {
+      if (typeof window.show_XXXXXXX === 'function') {
+        // ============================================================
+        // MONETAG SCRIPT PLACEHOLDER #2 (Rewarded Interstitial call)
+        // এখানে show_XXXXXXX আপনার Monetag zone অনুযায়ী ফাংশনের নাম দিয়ে বদলান
+        // ============================================================
+        window.show_XXXXXXX().then(resolve).catch(resolve);
+      } else {
+        // ডেমো/টেস্ট মোড — আসল অ্যাড কোড বসানোর আগে এটা শুধু সিমুলেট করে
+        showToast('⏳ বিজ্ঞাপন দেখানো হচ্ছে... (ডেমো মোড)');
+        setTimeout(resolve, 1500);
+      }
+    });
+  }
+
+  document.getElementById('adBtn').addEventListener('click', async () => {
+    if(spinning) return;
+    document.getElementById('adBtn').disabled = true;
+    await showRewardedAd();
+    document.getElementById('adBtn').disabled = false;
+    doSpin(true); // bonus spin, doesn't touch the 24h cooldown
+  });
+
+  document.getElementById('spinBtn').addEventListener('click', () => doSpin(false));
+
+  // ---------- Init ----------
+  buildWheel();
+  setBalance(getBalance());
+  renderHistory();
+  refreshSpinAvailability();
+  setInterval(refreshSpinAvailability, 30000);
+</script>
+</body>
+</html>
