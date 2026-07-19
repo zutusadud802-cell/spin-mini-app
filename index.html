@@ -6,14 +6,8 @@
 <title>দৈনিক স্পিন — Daily Spin</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<!--
-  ============================================================
-  MONETAG SCRIPT PLACEHOLDER #1  (Site verification / SDK tag)
-  Monetag ড্যাশবোর্ড থেকে যে <script> ট্যাগ দেবে, সেটা এখানে বসান।
-  Example (আপনার নিজের zone id দিয়ে বদলে নিন):
-  <script src='//libtl.com/sdk.js' data-zone='XXXXXXX' data-sdk='show_XXXXXXX'></script>
-  ============================================================
--->
+<!-- Monetag SDK — Zone 11348987 (Rewarded Interstitial) -->
+<script src='//libtl.com/sdk.js' data-zone='11348987' data-sdk='show_11348987'></script>
 
 <style>
   :root{
@@ -390,12 +384,9 @@
   // সেটি একটি Promise রিটার্ন করে যা অ্যাড শেষ হলে resolve হয়।
   function showRewardedAd(){
     return new Promise((resolve) => {
-      if (typeof window.show_XXXXXXX === 'function') {
-        // ============================================================
-        // MONETAG SCRIPT PLACEHOLDER #2 (Rewarded Interstitial call)
-        // এখানে show_XXXXXXX আপনার Monetag zone অনুযায়ী ফাংশনের নাম দিয়ে বদলান
-        // ============================================================
-        window.show_XXXXXXX().then(resolve).catch(resolve);
+      if (typeof window.show_11348987 === 'function') {
+        // Monetag Rewarded Interstitial — Zone 11348987
+        window.show_11348987().then(resolve).catch(resolve);
       } else {
         // ডেমো/টেস্ট মোড — আসল অ্যাড কোড বসানোর আগে এটা শুধু সিমুলেট করে
         showToast('⏳ বিজ্ঞাপন দেখানো হচ্ছে... (ডেমো মোড)');
