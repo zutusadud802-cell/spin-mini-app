@@ -146,22 +146,6 @@
     cursor:pointer;
   }
 
-  .banner-slot{
-    width:100%;
-    max-width:340px;
-    min-height:60px;
-    margin-top:26px;
-    border:1px dashed rgba(154,150,196,.4);
-    border-radius:12px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:var(--ink-dim);
-    font-size:12px;
-    text-align:center;
-    padding:8px;
-  }
-
   .history{
     width:100%;
     max-width:340px;
@@ -229,14 +213,6 @@
   <div class="timer" id="timerText"></div>
 
   <button class="ad-btn" id="adBtn">📺 বিজ্ঞাপন দেখে এক্সট্রা স্পিন নিন</button>
-
-  <!--
-    ============================================================
-    MONETAG BANNER PLACEHOLDER
-    Monetag "In-App Banner" কোড এখানে বসাতে পারেন (optional)।
-    ============================================================
-  -->
-  <div class="banner-slot" id="bannerSlot">বিজ্ঞাপন এখানে দেখাবে (Banner Ad Slot)</div>
 
   <div class="history">
     <h3>সাম্প্রতিক ইতিহাস</h3>
@@ -405,12 +381,31 @@
 
   document.getElementById('spinBtn').addEventListener('click', () => doSpin(false));
 
+  // ---------- Monetag In-App Interstitial (automatic background ads) ----------
+  // Zone 11348987 — একই zone, কিন্তু আলাদা মোডে কল করা হচ্ছে যাতে
+  // ইউজারকে কিছু না করেও নির্দিষ্ট বিরতিতে অ্যাড স্বয়ংক্রিয়ভাবে দেখায়।
+  function startInAppAds(){
+    if (typeof window.show_11348987 === 'function') {
+      window.show_11348987({
+        type: 'inApp',
+        inAppSettings: {
+          frequency: 2,
+          capping: 0.1,
+          interval: 30,
+          timeout: 5,
+          everyPage: false
+        }
+      });
+    }
+  }
+
   // ---------- Init ----------
   buildWheel();
   setBalance(getBalance());
   renderHistory();
   refreshSpinAvailability();
   setInterval(refreshSpinAvailability, 30000);
+  startInAppAds();
 </script>
 </body>
 </html>
