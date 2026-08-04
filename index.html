@@ -1702,11 +1702,14 @@
   function renderProfile(){
     const user = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : null;
     if(user){
-      document.getElementById('profileName').textContent = user.first_name || 'ইউজার';
-      document.getElementById('profileId').textContent = 'ID: ' + user.id;
+      const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'ইউজার';
+      document.getElementById('profileName').textContent = user.username ? `${fullName} (@${user.username})` : fullName;
+      document.getElementById('profileId').textContent = 'ID: ' + user.id; // প্রতিটা টেলিগ্রাম ইউজারের জন্য স্থায়ী ও ইউনিক
       document.getElementById('profileAvatar').textContent = (user.first_name || '?').charAt(0).toUpperCase();
     } else {
-      document.getElementById('profileName').textContent = 'গেস্ট ইউজার';
+      // এই ফলব্যাকটা দেখা যাবে শুধু যদি অ্যাপটা সরাসরি ব্রাউজারে (Telegram-এর বাইরে) খোলা হয় —
+      // Telegram Mini App হিসেবে (t.me লিংক দিয়ে) খুললে আসল নাম ও ID স্বয়ংক্রিয়ভাবে দেখাবে।
+      document.getElementById('profileName').textContent = 'গেস্ট ইউজার (Telegram-এর বাইরে খোলা হয়েছে)';
       document.getElementById('profileId').textContent = 'ID: —';
     }
   }
